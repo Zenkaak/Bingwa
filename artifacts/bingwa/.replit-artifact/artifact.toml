@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Bingwa"
+description = "A dense Kenyan services marketplace for browsing and purchasing mobile data bundles, minutes, SMS, electricity tokens, and upgrade services with fast M-Pesa checkout."
+version = "1.0.0"
+id = "artifacts/bingwa"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23835
+
+[services.development]
+run = "pnpm --filter @workspace/bingwa run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bingwa", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bingwa/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23835"
+BASE_PATH = "/"
