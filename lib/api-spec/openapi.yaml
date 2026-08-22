@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: deals
+    description: Public deals and checkout
+  - name: admin
+    description: Admin dashboard operations
 paths:
   /healthz:
     get:
@@ -24,6 +28,208 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /deals:
+    get:
+      operationId: listDeals
+      tags: [deals]
+      summary: List available deals
+      responses:
+        "200":
+          description: Available deals grouped by category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deal"
+  /store-settings:
+    get:
+      operationId: getStoreSettings
+      tags: [deals]
+      summary: Get public store settings
+      responses:
+        "200":
+          description: Public store settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreSettings"
+  /checkout:
+    post:
+      operationId: startCheckout
+      tags: [deals]
+      summary: Start an M-Pesa STK Push checkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutInput"
+      responses:
+        "201":
+          description: Checkout started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Login to the admin dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Admin session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+        "401":
+          description: Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/summary:
+    get:
+      operationId: getAdminSummary
+      tags: [admin]
+      summary: Get admin dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSummary"
+        "401":
+          description: Admin authentication required
+  /admin/customers:
+    get:
+      operationId: listCustomers
+      tags: [admin]
+      summary: List and search customers
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema: { type: string }
+          description: Search by customer name, phone number, or M-Pesa reference
+      responses:
+        "200":
+          description: Customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+        "401":
+          description: Admin authentication required
+  /admin/orders:
+    get:
+      operationId: listOrders
+      tags: [admin]
+      summary: List orders
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, completed, failed, pending]
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+        "401":
+          description: Admin authentication required
+  /admin/deals:
+    get:
+      operationId: listAdminDeals
+      tags: [admin]
+      summary: List deals for the admin dashboard
+      responses:
+        "200":
+          description: Editable deals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deal"
+        "401":
+          description: Admin authentication required
+  /admin/deals/{id}:
+    patch:
+      operationId: updateDeal
+      tags: [admin]
+      summary: Update a deal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealUpdate"
+      responses:
+        "200":
+          description: Updated deal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+        "400":
+          description: Invalid deal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin authentication required
+        "404":
+          description: Deal not found
+  /admin/settings:
+    patch:
+      operationId: updateStoreSettings
+      tags: [admin]
+      summary: Update public store settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreSettingsUpdate"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreSettings"
+        "401":
+          description: Admin authentication required
 components:
   schemas:
     HealthStatus:
@@ -33,4 +239,108 @@ components:
           type: string
       required:
         - status
+    Deal:
+      type: object
+      required: [id, category, price, quantity, validity, repeatable]
+      properties:
+        id: { type: string }
+        category:
+          type: string
+          enum: [data, minutes, sms]
+        price: { type: number, minimum: 1 }
+        quantity: { type: string }
+        validity: { type: string }
+        repeatable: { type: boolean }
+    DealUpdate:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [data, minutes, sms]
+        price: { type: number, minimum: 1 }
+        quantity: { type: string, minLength: 1 }
+        validity: { type: string, minLength: 1 }
+        repeatable: { type: boolean }
+    StoreSettings:
+      type: object
+      required: [tillNumber, customerCare, contactName]
+      properties:
+        tillNumber: { type: string }
+        customerCare: { type: string }
+        contactName: { type: string }
+    StoreSettingsUpdate:
+      type: object
+      properties:
+        tillNumber: { type: string, minLength: 5 }
+        customerCare: { type: string, minLength: 5 }
+        contactName: { type: string, minLength: 2 }
+    CheckoutInput:
+      type: object
+      required: [dealId, phoneNumber]
+      properties:
+        dealId: { type: string, minLength: 1 }
+        phoneNumber: { type: string, minLength: 9 }
+        customerName: { type: ["string", "null"], minLength: 2 }
+    CheckoutResponse:
+      type: object
+      required: [orderId, message]
+      properties:
+        orderId: { type: number }
+        message: { type: string }
+    AdminLoginInput:
+      type: object
+      required: [password]
+      properties:
+        password: { type: string, minLength: 1 }
+    AdminSession:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean }
+    Customer:
+      type: object
+      required: [id, phoneNumber, name, orderCount, totalSpent, lastOrderAt, lastMpesaReference]
+      properties:
+        id: { type: number }
+        phoneNumber: { type: string }
+        name: { type: ["string", "null"] }
+        orderCount: { type: number }
+        totalSpent: { type: number }
+        lastOrderAt: { type: ["string", "null"] }
+        lastMpesaReference: { type: ["string", "null"] }
+    Order:
+      type: object
+      required: [id, phoneNumber, dealId, amount, status, createdAt]
+      properties:
+        id: { type: number }
+        phoneNumber: { type: string }
+        dealId: { type: string }
+        amount: { type: number }
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        mpesaReceipt: { type: ["string", "null"] }
+        failureReason: { type: ["string", "null"] }
+        createdAt: { type: string }
+    AdminSummary:
+      type: object
+      required: [totalOrders, completedOrders, failedOrders, pendingOrders, totalRevenue, todayOrders, todayRevenue, completionRate, recentOrders]
+      properties:
+        totalOrders: { type: number }
+        completedOrders: { type: number }
+        failedOrders: { type: number }
+        pendingOrders: { type: number }
+        totalRevenue: { type: number }
+        todayOrders: { type: number }
+        todayRevenue: { type: number }
+        completionRate: { type: number }
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
 

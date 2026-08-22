@@ -1,0 +1,2 @@
+- [Vercel and GitHub access](vercel-github-access.md) — preserve upstream history when the workspace and GitHub histories differ before pushing repairs.
+- [Imported app previews](imported-app-previews.md) — imported repositories may need a manually configured preview workflow when artifact metadata is not registered in the current workspace.

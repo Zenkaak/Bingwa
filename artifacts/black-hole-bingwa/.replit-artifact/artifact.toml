@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Black Hole Bingwa Services"
+description = "A Kenyan mobile deals storefront for buying Bingwa data, minutes, and SMS packages via M-Pesa, with an admin dashboard for settings, customers, orders, and payment status."
+version = "1.0.0"
+id = "artifacts/black-hole-bingwa"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24037
+
+[services.development]
+run = "pnpm --filter @workspace/black-hole-bingwa run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/black-hole-bingwa", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/black-hole-bingwa/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24037"
+BASE_PATH = "/"

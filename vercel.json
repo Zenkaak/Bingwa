@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm --filter @workspace/black-hole-bingwa run build",
+  "outputDirectory": "artifacts/black-hole-bingwa/dist/public",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

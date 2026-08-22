@@ -1,0 +1,6 @@
+import { ArrowLeft, CircleAlert } from 'lucide-react';
+import { Link } from 'wouter';
+
+export default function NotFound() {
+  return <main className="grid min-h-[100dvh] place-items-center bg-[#202b4e] p-6 text-[#f9f4e9]"><div className="max-w-md text-center"><div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#f3a83b] text-[#202b4e]"><CircleAlert className="size-6" /></div><p className="mt-7 font-mono-app text-[10px] uppercase tracking-[.22em] text-[#f3a83b]">Lost in the black hole</p><h1 className="mt-3 font-display text-5xl font-bold tracking-tight">This page drifted away.</h1><p className="mt-4 text-sm leading-6 text-[#dbe0eb]">The link you followed doesn't lead to a live counter. Let's get you back to today's deals.</p><Link href="/" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-[#f3a83b] px-5 py-3 text-sm font-bold text-[#202b4e] transition hover:bg-[#ffc66e]" data-testid="link-not-found-home"><ArrowLeft className="size-4" /> Back to storefront</Link></div></main>;
+}
