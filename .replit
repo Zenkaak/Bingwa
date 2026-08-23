@@ -1,4 +1,4 @@
-modules = ["nodejs-24", "python-base-3.13"]
+modules = ["nodejs-24"]
 
 [deployment]
 router = "application"
@@ -11,27 +11,6 @@ env = { "CI" = "true" }
 [workflows]
 runButton = "Project"
 
-[[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Bingwa dashboard"
-
-[[workflows.workflow]]
-name = "Bingwa dashboard"
-author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd artifacts/black-hole-bingwa && PORT=3000 pnpm run dev"
-waitForPort = 3000
-
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true
@@ -39,6 +18,3 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
-
-[nix]
-channel = "stable-25_05"
