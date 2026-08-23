@@ -1,9 +1,9 @@
 import { type FormEvent, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
-  Activity, ArrowRight, BarChart3, Check, CircleHelp, Clock3, CreditCard, Database,
+  Activity, ArrowRight, BarChart3, Check, CircleHelp, Clock3, CreditCard,
   ExternalLink, Filter, LayoutGrid, LogIn, Menu, PackageCheck, Search, Settings,
-  ShieldCheck, ShoppingBag, Sparkles, Store, Users, X, Zap, type LucideIcon
+  ShieldCheck, ShoppingBag, Sparkles, Store, Users, X, type LucideIcon
 } from "lucide-react";
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from "wouter";
 import {
@@ -36,11 +36,6 @@ const fallbackDeals: Deal[] = [
   { id: "sms-1500", category: "sms", quantity: "1,500 SMS", price: 75, validity: "30 DAYS", repeatable: true },
 ];
 
-const categoryMeta = [
-  { id: "data", label: "Data Bundles", caption: "Internet packages", icon: Database },
-  { id: "tokens", label: "KPLC Tokens", caption: "Electricity", icon: Zap },
-  { id: "loans", label: "Loan Limits", caption: "Upgrade", icon: BarChart3 },
-];
 const carriers = ["Safaricom", "Airtel", "Telkom"];
 
 function Logo({ compact = false }: { compact?: boolean }) {
@@ -94,21 +89,6 @@ function StatsStrip() {
         ))}
       </div>
     </section>
-  );
-}
-
-function CategoryRail({ active, onChange }: { active: string; onChange: (value: string) => void }) {
-  return (
-    <div className="grid grid-cols-3 gap-2" data-testid="category-rail">
-      {categoryMeta.map(({ id, label, caption, icon: Icon }) => (
-        <button key={id} onClick={() => onChange(id)} className={`group relative min-h-[58px] rounded-xl border p-2.5 text-left transition sm:min-h-[68px] sm:p-3 ${active === id ? "border-primary/45 bg-primary/[.09]" : "border-border bg-card/55 hover:border-primary/30"}`} data-testid={`button-category-${id}`}>
-          <div className={`mb-1.5 grid h-6 w-6 place-items-center rounded-lg ${active === id ? "bg-primary text-primary-foreground" : "bg-secondary text-primary"}`}><Icon className="h-3.5 w-3.5" /></div>
-          <div className="text-[10px] font-bold text-foreground sm:text-[11px]">{label}</div>
-          <div className="text-[8px] text-muted-foreground">{caption}</div>
-          {active === id && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary" />}
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -178,11 +158,8 @@ function Home() {
       <main className="mx-auto max-w-[1180px] px-3 pb-16 sm:px-5">
         <StatsStrip />
         <div className="my-2 flex items-center justify-between rounded-lg border border-border/70 bg-card/45 px-3 py-1.5 text-[9px] text-muted-foreground" data-testid="announcement-bar"><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(163_94%_48%)]" />Susan A. just bought <b className="text-foreground">18GB</b></span><span className="hidden sm:block">just now</span></div>
-        <section className="grid-noise relative mt-3 overflow-hidden rounded-2xl border border-primary/20 bg-primary/[.035] p-4 sm:p-5" data-testid="section-catalogue-intro">
-          <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><div className="font-mono-app text-[9px] uppercase tracking-[.24em] text-primary">Nairobi's everyday connection counter</div><h1 className="mt-2 max-w-xl text-2xl font-extrabold tracking-[-.05em] text-foreground sm:text-3xl">Stay in the <span className="text-primary">loop.</span></h1><p className="mt-1 max-w-lg text-xs leading-5 text-muted-foreground">Data, minutes, and SMS bundles that get straight to the point. Pick a lane, pay from your phone, keep moving.</p></div><div className="flex shrink-0 items-center gap-4 border-l border-primary/25 pl-4 text-xs sm:pb-1"><div><b className="block text-lg text-foreground">1 min</b><span className="text-[9px] text-muted-foreground">to checkout</span></div><div><b className="block text-lg text-foreground">M-Pesa</b><span className="text-[9px] text-muted-foreground">secure payment</span></div></div></div>
-        </section>
-        <section className="mt-4"><div className="mb-2 flex items-center justify-between"><div><div className="font-mono-app text-[9px] uppercase tracking-[.22em] text-primary">Live catalogue</div><h2 className="mt-1 text-lg font-bold tracking-tight">Pick your connection</h2></div><div className="hidden items-center gap-1.5 text-[9px] text-muted-foreground sm:flex"><span className={`h-1.5 w-1.5 rounded-full ${health?.status ? "bg-primary" : "bg-accent"}`} />{health?.status === "ok" ? "system online" : "instant delivery"}</div></div>
-          <CategoryRail active={category} onChange={setCategory} />
+        <section className="mt-3"><div className="mb-2 flex items-end justify-between"><div><div className="font-mono-app text-[9px] uppercase tracking-[.22em] text-primary">Live catalogue</div><h2 className="mt-1 text-lg font-bold tracking-tight">Pick your connection</h2></div><div className="hidden items-center gap-1.5 text-[9px] text-muted-foreground sm:flex"><span className={`h-1.5 w-1.5 rounded-full ${health?.status ? "bg-primary" : "bg-accent"}`} />{health?.status === "ok" ? "system online" : "instant delivery"}</div></div>
+          <div className="mb-2 flex items-center gap-1 rounded-lg border border-border bg-card/45 p-1" data-testid="category-tabs"><button onClick={() => setCategory("data")} className={`rounded-md px-3 py-1 text-[9px] font-bold transition ${category === "data" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`} data-testid="button-category-data">Data bundles</button><button onClick={() => setCategory("sms")} className={`rounded-md px-3 py-1 text-[9px] font-bold transition ${category === "sms" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`} data-testid="button-category-sms">SMS</button></div>
           <div className="mt-2 flex items-center gap-2 overflow-x-auto rounded-xl border border-border bg-card/55 p-1" data-testid="carrier-tabs">{carriers.map((item) => <button key={item} onClick={() => setCarrier(item)} className={`shrink-0 rounded-lg px-3 py-1.5 text-[10px] font-bold transition ${carrier === item ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`} data-testid={`button-carrier-${item.toLowerCase()}`}>{item}</button>)}<span className="ml-auto hidden pr-2 text-[9px] text-muted-foreground sm:block">Bundles available on {carrier}</span></div>
           <div className="mt-2 flex gap-2"><label className="relative block flex-1"><Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" /><input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search packages or validity..." className="h-9 w-full rounded-lg border border-input bg-card/80 pl-9 pr-3 text-[11px] text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-primary/60" data-testid="input-search-deals" /></label><button className="grid h-9 w-9 place-items-center rounded-lg border border-input bg-card/80 text-muted-foreground hover:border-primary/50 hover:text-primary" data-testid="button-filter-deals"><Filter className="h-3.5 w-3.5" /></button></div>
           {isError && <div className="mt-2 flex items-center justify-between rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-[10px] text-accent" data-testid="status-deals-error"><span>Live catalogue unavailable — showing popular bundles.</span><button onClick={() => refetch()} className="font-bold underline" data-testid="button-retry-deals">Retry</button></div>}
